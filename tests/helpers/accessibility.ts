@@ -72,9 +72,21 @@ foreach ($el in $allEls) {
     $name = $el.Current.Name
     if ($el.Current.IsKeyboardFocusable) { $focusableCount++ }
     if ($ct -eq 'ControlType.Button') {
+        $rect     = $el.Current.BoundingRectangle
+        $automId  = $el.Current.AutomationId
+        $helpText = $el.Current.HelpText
+        # Walk up one level to get parent name for context
+        $walker = [System.Windows.Automation.TreeWalker]::RawViewWalker
+        $parent = $walker.GetParent($el)
+        $parentName = if ($parent) { $parent.Current.Name } else { '' }
         $obj = @{ name = $name; controlType = $ct;
                   isKeyboardFocusable = $el.Current.IsKeyboardFocusable;
-                  isEnabled = $el.Current.IsEnabled }
+                  isEnabled = $el.Current.IsEnabled;
+                  automationId = $automId;
+                  helpText = $helpText;
+                  parentName = $parentName;
+                  x = [int]$rect.X; y = [int]$rect.Y;
+                  width = [int]$rect.Width; height = [int]$rect.Height }
         $buttons.Add($obj)
         if ([string]::IsNullOrWhiteSpace($name)) { $unnamedButtons.Add($obj) }
     }

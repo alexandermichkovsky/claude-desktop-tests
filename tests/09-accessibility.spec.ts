@@ -60,13 +60,22 @@ test.describe('Accessibility', () => {
 
     expect(info.found).toBe(true);
 
+    // Diagnose: Details ausgeben um den Button zu identifizieren
     if (info.unnamedButtons.length > 0) {
-      console.log(`  → Namenlose Buttons gefunden:`);
-      info.unnamedButtons.forEach(b => console.log(`     - ControlType: ${b.controlType}`));
+      console.log(`  → ${info.unnamedButtons.length} namenlose(r) Button(s) gefunden:`);
+      info.unnamedButtons.forEach((b: any) => {
+        console.log(`     AutomationId : "${b.automationId}"`);
+        console.log(`     HelpText     : "${b.helpText}"`);
+        console.log(`     Parent       : "${b.parentName}"`);
+        console.log(`     Position     : x=${b.x} y=${b.y} w=${b.width} h=${b.height}`);
+        console.log(`     Focusable    : ${b.isKeyboardFocusable}`);
+        console.log('     ---');
+      });
     }
 
+    // TODO: Schwellwert setzen sobald der Button identifiziert ist
     expect(info.unnamedButtons.length).toBe(0);
-    console.log(`  → ${info.buttons.length} Buttons, alle mit Name`);
+    console.log(`  → ${info.buttons.length} Buttons gesamt, ${info.unnamedButtons.length} ohne Name`);
   });
 
   // ── Tastaturnavigation ────────────────────────────────────────────────────
