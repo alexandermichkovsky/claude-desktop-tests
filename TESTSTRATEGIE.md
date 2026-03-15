@@ -169,7 +169,7 @@ Nightly   →  E2E + Performance   (unbegrenzt, Ergebnis als Report)
 | Visual Regression | ✓ 4 Snapshots (pixelmatch) | ✓ ~20 Snapshots + Theme-Varianten | Teilweise umgesetzt |
 | Performance | ✓ 4 Proxy-Metriken (WorkingSet) | ✓ Heap/CPU via IPC | Teilweise umgesetzt |
 | Accessibility | ✗ Keine | ✓ axe-core | Kein DOM-Zugriff |
-| CI/CD | ✓ GitHub Actions `windows-2022` (`.github/workflows/e2e.yml`) | ✓ GitHub Actions (Windows Runner) | Installer-URL als Secret erforderlich |
+| CI/CD | ✓ GitHub Actions `windows-2022` (`.github/workflows/e2e.yml`) | ✓ GitHub Actions (Windows Runner) | — |
 
 ---
 

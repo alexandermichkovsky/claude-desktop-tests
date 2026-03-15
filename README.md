@@ -132,8 +132,6 @@ Der Publisher-Suffix `pzs8sxrjxfjjc` ist an den Anthropic-Signaturschlüssel geb
 
 Tests laufen automatisch bei jedem Push und Pull Request auf einem GitHub Actions `windows-2022`-Runner.
 
-**Einmalige Einrichtung:** Repository Secret `CLAUDE_INSTALLER_URL` anlegen (`Settings → Secrets and variables → Actions`) mit der Download-URL des Claude Desktop Windows-Installers.
-
 Nach jedem Run stehen unter dem **Actions**-Tab als Artifacts bereit:
 - `playwright-report` — HTML-Testreport
 - `test-screenshots` — Baselines und Diff-Bilder (Visual Regression)
