@@ -16,7 +16,7 @@ npm install
 ## Tests ausführen
 
 ```bash
-# Alle Tests (46 Tests)
+# Alle Tests (53 Tests)
 npm test
 
 # Einzelne Test-Suite
@@ -45,7 +45,8 @@ npm run report
 │   ├── helpers/
 │   │   ├── app.ts                    # Kern-Helper: App-Start, Fenster, Input
 │   │   ├── visual.ts                 # Snapshot-Vergleich (pixelmatch)
-│   │   └── performance.ts            # Performance-Proxy-Metriken
+│   │   ├── performance.ts            # Performance-Proxy-Metriken
+│   │   └── accessibility.ts          # Windows UIA, Fokus, Inkognito-Erkennung
 │   ├── 01-startup.spec.ts            # Startup & Initialisierung (5 Tests)
 │   ├── 02-conversation.spec.ts       # Konversationsmanagement (6 Tests)
 │   ├── 03-ui-navigation.spec.ts      # UI-Navigation & Shortcuts (4 Tests)
@@ -53,7 +54,9 @@ npm run report
 │   ├── 05-settings.spec.ts           # Einstellungen (4 Tests)
 │   ├── 06-window-management.spec.ts  # Fensterverwaltung (6 Tests)
 │   ├── 07-visual-regression.spec.ts  # Visual Regression / Snapshot-Vergleich (4 Tests)
-│   └── 08-performance.spec.ts        # Performance-Proxy (4 Tests)
+│   ├── 08-performance.spec.ts        # Performance-Proxy (4 Tests)
+│   ├── 09-accessibility.spec.ts      # Accessibility via Windows UIA (7 Tests)
+│   └── 10-incognito.spec.ts          # Inkognito-Modus (7 Tests)
 ├── test-screenshots/
 │   ├── baseline/                     # Referenz-Snapshots (Visual Regression)
 │   └── diff/                         # Diff-Bilder bei Abweichungen
@@ -73,6 +76,7 @@ npm run report
 | 07 Visual Regression | Pixel-Vergleich mit Baseline (1 % Toleranz) | 4 |
 | 08 Performance | Startzeit, Speicher, Memory Leak, Reaktionszeit | 4 |
 | 09 Accessibility | Windows UIA: Struktur, Tastaturnavigation, Fokus, Shortcuts | 7 |
+| 10 Inkognito | Aktivierung, Toggle, visueller Indikator, Stabilität | 7 |
 
 ## Visual Regression
 

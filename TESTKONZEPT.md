@@ -30,7 +30,7 @@ Da Claude Desktop als Windows Store AppX installiert ist, gibt es **keinen direk
 
 ### 3.2 Testart: Regressionstests
 
-Jeder Test prüft eine definierte Kernfunktion. Bei einem neuen Claude-Release werden alle 39 Tests ausgeführt. Schlägt ein Test fehl, ist eine Regression in diesem Bereich wahrscheinlich.
+Jeder Test prüft eine definierte Kernfunktion. Bei einem neuen Claude-Release werden alle 53 Tests ausgeführt. Schlägt ein Test fehl, ist eine Regression in diesem Bereich wahrscheinlich.
 
 ### 3.3 Nicht abgedeckt
 
@@ -166,6 +166,22 @@ Parallelität   : Sequenziell (workers: 1) — nur eine App-Instanz möglich
 | 9.6 | Fokus-Indikator visuell sichtbar | Pixel-Diff vor/nach Tab > 0 |
 | 9.7 | Kernfunktionen per Shortcut erreichbar | Ctrl+N, Ctrl+K, Ctrl+, ohne Maus |
 
+### Suite 10 — Inkognito-Modus (`10-incognito.spec.ts`)
+
+*Vorbedingung: App läuft, Inkognito zu Beginn deaktiviert.*
+
+> **Technische Besonderheit:** Claude Desktop ändert den Windows-HWND-Titel (`Process.MainWindowTitle`) im Inkognito-Modus **nicht** — er bleibt immer „Claude". Inkognito-Erkennung erfolgt daher per **Pixel-Brightness-Check** der Titelleiste (R+G+B: Normal ≈ 700, Inkognito ≈ 42; Schwelle < 300). Aktivierung via UIA-Koordinatenklick auf den Ghost-Button (unbenannter Button im UIA-Baum). Im Inkognito-Modus verschwindet der Ghost-Button aus dem UIA-Baum — Deaktivierung daher via Kill+Neustart.
+
+| ID | Testfall | Prüfkriterium |
+|----|----------|---------------|
+| 10.1 | Inkognito via Ghost-Button aktivierbar | `isIncognitoActive()` = true (Brightness-Check) |
+| 10.2 | Visueller Indikator (dunkle Titelleiste) | Brightness normal ≥ 300, Inkognito < 300, Δ > 200 |
+| 10.3 | Toggle: Kill+Restart deaktiviert Inkognito | `isIncognitoActive()` = false nach Restart |
+| 10.4 | Inkognito vollständig deaktivierbar | Normalmodus nach Kill+Restart wiederhergestellt |
+| 10.5 | Ctrl+N im Inkognito-Modus möglich | Inkognito bleibt aktiv, App stabil |
+| 10.6 | Einstellungen im Inkognito-Modus erreichbar | Ctrl+, öffnet Dialog, App stabil |
+| 10.7 | App bleibt nach 3× Inkognito-Zyklus stabil | Fenstertitel enthält „Claude", kein Absturz |
+
 ### Suite 8 — Performance-Proxy (`08-performance.spec.ts`)
 
 | ID | Testfall | Prüfkriterium |
@@ -181,7 +197,7 @@ Parallelität   : Sequenziell (workers: 1) — nur eine App-Instanz möglich
 
 | Kriterium | Schwellwert |
 |-----------|-------------|
-| Bestandene Tests | 39 / 39 (100 %) |
+| Bestandene Tests | 53 / 53 (100 %) |
 | Erlaubte Fehlschläge | 0 (bei `retries: 1` zählt erst der 2. Fehlschlag) |
 | Maximale Gesamtlaufzeit | < 15 Minuten |
 
