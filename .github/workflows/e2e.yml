@@ -27,15 +27,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Claude Desktop is an AppX package. Provide the installer URL via a
-      # repository secret named CLAUDE_INSTALLER_URL (Settings → Secrets).
-      # Get the URL from https://claude.ai/download (Windows).
       - name: Download Claude Desktop installer
         run: |
-          Invoke-WebRequest -Uri "$env:CLAUDE_INSTALLER_URL" -OutFile "ClaudeSetup.exe"
+          Invoke-WebRequest -Uri "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe" -OutFile "ClaudeSetup.exe"
         shell: pwsh
-        env:
-          CLAUDE_INSTALLER_URL: ${{ secrets.CLAUDE_INSTALLER_URL }}
 
       - name: Install Claude Desktop
         run: |
