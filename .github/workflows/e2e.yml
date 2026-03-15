@@ -9,9 +9,10 @@ on:
 
 jobs:
   e2e-tests:
-    # windows-2022 runner has a real interactive desktop session —
-    # required for nut-js keyboard/mouse automation and Win32 window APIs.
-    runs-on: windows-2022
+    # Self-hosted runner on a Windows 10/11 machine with Claude Desktop
+    # already installed as an AppX package (Windows Store version).
+    # Setup: GitHub → Settings → Actions → Runners → New self-hosted runner
+    runs-on: self-hosted
     timeout-minutes: 30
 
     steps:
@@ -26,30 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install winget
-        uses: Cyberboss/install-winget@v1
-
-      - name: Install Claude Desktop (via winget)
-        run: |
-          winget install --id Anthropic.Claude --silent --accept-package-agreements --accept-source-agreements
-          Start-Sleep -Seconds 10
-          # Get-AppxPackage needs the Appx module via PS5.1 compatibility layer in pwsh
-          Import-Module Appx -UseWindowsPowerShell -WarningAction SilentlyContinue
-          $pkg = Get-AppxPackage | Where-Object { $_.Name -like "*Claude*" }
-          if (-not $pkg) { throw "Claude Desktop AppX package not found after winget install." }
-          Write-Host "Installed: $($pkg.PackageFullName)"
-        shell: pwsh
-
-      # Prevent Windows from locking the desktop mid-test (no screensaver,
-      # no sleep) — the runner already has no physical screen, but the policy
-      # can still trigger a locked workstation state on some runner images.
-      - name: Disable display sleep / screensaver
-        run: |
-          powercfg /change standby-timeout-ac 0
-          powercfg /change monitor-timeout-ac 0
-          reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d 0 /f
-        shell: pwsh
 
       - name: Run E2E tests
         run: npm test
