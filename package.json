@@ -1,0 +1,23 @@
+{
+  "name": "claude-desktop-tests",
+  "version": "1.0.0",
+  "description": "Playwright E2E Tests für Claude Desktop (Electron App)",
+  "scripts": {
+    "test": "playwright test",
+    "test:startup": "playwright test tests/01-startup.spec.ts",
+    "test:visual": "playwright test tests/07-visual-regression.spec.ts",
+    "test:performance": "playwright test tests/08-performance.spec.ts",
+    "test:headed": "playwright test --headed",
+    "update-snapshots": "node -e \"require('fs').rmSync('./test-screenshots/baseline', {recursive:true, force:true}); console.log('Baselines gelöscht.')\"",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@nut-tree-fork/nut-js": "^4.2.6",
+    "@playwright/test": "^1.49.0",
+    "@types/pngjs": "^6.0.5",
+    "nutjs": "^0.0.1",
+    "pixelmatch": "^7.1.0",
+    "playwright": "^1.49.0",
+    "pngjs": "^7.0.0"
+  }
+}
