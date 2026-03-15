@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import * as fs from 'fs';
 import { Key } from '@nut-tree-fork/nut-js';
 import {
   showClaudeDesktop,
@@ -165,7 +166,7 @@ test.describe('Inkognito-Modus', () => {
     expect(isIncognitoActive()).toBe(true);
 
     const screenshot = await takeScreenshot('10.5-new-chat-incognito');
-    expect(require('fs').existsSync(screenshot)).toBe(true);
+    expect(fs.existsSync(screenshot)).toBe(true);
 
     console.log('  → Ctrl+N im Inkognito-Modus funktioniert');
   });

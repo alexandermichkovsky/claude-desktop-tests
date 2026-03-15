@@ -10,7 +10,8 @@ function runTempScript(scriptBody: string): string {
     return execSync(`powershell -ExecutionPolicy Bypass -File "${tmpFile}"`, { timeout: 20_000 })
       .toString()
       .trim();
-  } catch {
+  } catch (e) {
+    console.warn(`[accessibility] PowerShell script failed: ${e instanceof Error ? e.message : String(e)}`);
     return '';
   } finally {
     try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
@@ -22,6 +23,13 @@ export interface UIAElement {
   controlType: string;
   isKeyboardFocusable: boolean;
   isEnabled: boolean;
+  automationId?: string;
+  helpText?: string;
+  parentName?: string;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 }
 
 export interface UIAWindowInfo {
@@ -113,7 +121,8 @@ foreach ($el in $allEls) {
       buttons:        Array.isArray(p.buttons)        ? p.buttons        : [],
       unnamedButtons: Array.isArray(p.unnamedButtons) ? p.unnamedButtons : [],
     };
-  } catch {
+  } catch (e) {
+    console.warn(`[accessibility] Failed to parse UIAWindowInfo: ${e instanceof Error ? e.message : String(e)}`);
     return empty;
   }
 }
@@ -139,19 +148,32 @@ if (-not $focused) { Write-Output 'null'; exit }
   try {
     const p = JSON.parse(result);
     return { name: p.name ?? '', controlType: p.controlType ?? '' };
-  } catch {
+  } catch (e) {
+    console.warn(`[accessibility] Failed to parse getFocusedElement: ${e instanceof Error ? e.message : String(e)}`);
     return null;
   }
 }
+
+/** Known-safe SendKeys shortcuts. */
+const VALID_SHORTCUTS: Record<string, string> = {
+  'incognito': '^+i',
+  'new-chat':  '^n',
+  'search':    '^k',
+  'settings':  '^,',
+  'escape':    '{ESC}',
+};
 
 /**
  * Sends a keyboard shortcut directly to the Claude Desktop window using
  * PowerShell AppActivate + SendKeys — both in the same process, so there is
  * no race condition between "focus window" and "send keys".
  *
- * shortcut: SendKeys notation — e.g. "^+i" = Ctrl+Shift+I
+ * shortcut: one of the known-safe keys defined in VALID_SHORTCUTS
+ *   e.g. 'incognito' → Ctrl+Shift+I
  */
-export function pressShortcutViaPS(shortcut: string): void {
+export function pressShortcutViaPS(shortcut: keyof typeof VALID_SHORTCUTS): void {
+  const sendKeysValue = VALID_SHORTCUTS[shortcut];
+  if (!sendKeysValue) throw new Error(`Unknown shortcut: "${shortcut}"`);
   runTempScript(`
 Add-Type -AssemblyName Microsoft.VisualBasic
 Add-Type -AssemblyName System.Windows.Forms
@@ -163,7 +185,7 @@ if (-not $proc) { exit }
 
 [Microsoft.VisualBasic.Interaction]::AppActivate([int]$proc.Id)
 Start-Sleep -Milliseconds 400
-[System.Windows.Forms.SendKeys]::SendWait("${shortcut}")
+[System.Windows.Forms.SendKeys]::SendWait("${sendKeysValue}")
 Start-Sleep -Milliseconds 200
 `);
 }
@@ -175,6 +197,9 @@ Start-Sleep -Milliseconds 200
  * Returns the absolute file path of the saved PNG.
  */
 export function captureWindowScreenshot(name: string): string {
+  if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+    throw new Error(`Invalid screenshot name (only a-z, A-Z, 0-9, _ and - allowed): "${name}"`);
+  }
   const screenshotDir = path.join(process.cwd(), 'test-screenshots');
   if (!fs.existsSync(screenshotDir)) fs.mkdirSync(screenshotDir, { recursive: true });
   const filePath = path.join(screenshotDir, `${name}-${Date.now()}.png`).replace(/\\/g, '/');

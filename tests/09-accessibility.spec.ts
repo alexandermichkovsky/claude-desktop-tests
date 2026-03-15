@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import * as fs from 'fs';
 import { Key } from '@nut-tree-fork/nut-js';
 import {
   showClaudeDesktop,
@@ -70,7 +71,7 @@ test.describe('Accessibility', () => {
 
     if (info.unnamedButtons.length > 0) {
       console.log(`  → ${info.unnamedButtons.length} namenlose(r) Button(s) (Schwellwert: ${KNOWN_UNNAMED_BUTTONS}):`);
-      info.unnamedButtons.forEach((b: any) =>
+      info.unnamedButtons.forEach((b) =>
         console.log(`     Position: x=${b.x} y=${b.y} w=${b.width} h=${b.height}, focusable=${b.isKeyboardFocusable}`)
       );
     }
@@ -126,13 +127,13 @@ test.describe('Accessibility', () => {
     await sleep(400);
     const after = captureWindowScreenshot('9.6-focus-after');
 
-    expect(require('fs').existsSync(before)).toBe(true);
-    expect(require('fs').existsSync(after)).toBe(true);
+    expect(fs.existsSync(before)).toBe(true);
+    expect(fs.existsSync(after)).toBe(true);
 
     const { PNG } = await import('pngjs');
     const pixelmatch = (await import('pixelmatch')).default;
-    const img1 = PNG.sync.read(require('fs').readFileSync(before));
-    const img2 = PNG.sync.read(require('fs').readFileSync(after));
+    const img1 = PNG.sync.read(fs.readFileSync(before));
+    const img2 = PNG.sync.read(fs.readFileSync(after));
 
     if (img1.width === img2.width && img1.height === img2.height) {
       const diff = Buffer.alloc(img1.width * img1.height * 4);
