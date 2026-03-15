@@ -67,6 +67,7 @@ Parallelität   : Sequenziell (workers: 1) — nur eine App-Instanz möglich
 | `@nut-tree-fork/nut-js` | Tastatur- und Mausautomatisierung, Screenshots |
 | `pixelmatch` + `pngjs` | Pixel-basierter Screenshot-Vergleich (Visual Regression) |
 | PowerShell + Win32 P/Invoke | Fenstererkennung, Größe/Position, Fokus, Minimieren/Maximieren |
+| `UIAutomationClient` (.NET) | Windows Accessibility-Baum (UIA) — Ersatz für axe-core ohne DOM-Zugriff |
 | `Get-AppxPackage` | Dynamische Ermittlung von Version und Exe-Pfad |
 
 ---
@@ -150,6 +151,20 @@ Parallelität   : Sequenziell (workers: 1) — nur eine App-Instanz möglich
 | 7.2 | Einstellungsdialog geöffnet | Pixel-Diff ≤ 1 % |
 | 7.3 | Suchpalette (Ctrl+K) | Pixel-Diff ≤ 1 % |
 | 7.4 | Eingabefeld mit Text | Pixel-Diff ≤ 1 % |
+
+### Suite 9 — Accessibility (`09-accessibility.spec.ts`)
+
+*Vorbedingung: App läuft, Fenster im Vordergrund.*
+
+| ID | Testfall | Prüfkriterium |
+|----|----------|---------------|
+| 9.1 | Hauptfenster via UIA erreichbar | `found = true`, `elementCount > 0` |
+| 9.2 | Keyboard-fokussierbare Elemente | ≥ 3 fokussierbare Elemente im Fenster |
+| 9.3 | Keine namenlosen Buttons | `unnamedButtons.length = 0` |
+| 9.4 | Tab-Navigation ohne Falle | App nach 10× Tab stabil, Fenstertitel vorhanden |
+| 9.5 | Tab verschiebt Fokus | `getFocusedElement()` ≠ null, ControlType vorhanden |
+| 9.6 | Fokus-Indikator visuell sichtbar | Pixel-Diff vor/nach Tab > 0 |
+| 9.7 | Kernfunktionen per Shortcut erreichbar | Ctrl+N, Ctrl+K, Ctrl+, ohne Maus |
 
 ### Suite 8 — Performance-Proxy (`08-performance.spec.ts`)
 

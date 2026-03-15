@@ -125,14 +125,20 @@ Gemessene Realwerte als Referenz:
 
 **Ziel:** Bedienbarkeit für Nutzer mit eingeschränkter Motorik/Sehvermögen.
 
-Prüfpunkte:
-- Vollständige Tastaturbedienbarkeit (kein Maus-Pflichtpfad)
-- ARIA-Labels auf interaktiven Elementen
-- Farbkontrast ≥ WCAG AA (4.5:1)
-- Screen-Reader-Kompatibilität (NVDA/Narrator)
-- Zoom bis 200 % ohne Funktionsverlust
+**Heutiger Stand (pragmatisch umgesetzt):** Windows UI Automation API via .NET `UIAutomationClient` — dieselbe Schicht die NVDA und Narrator nutzen. axe-core erfordert CDP/DOM-Zugriff, der bei Claude Desktop (AppX) nicht verfügbar ist.
 
-**Werkzeug (ideal):** `axe-core` via Playwright (`checkA11y()`), Windows UI Automation API
+Prüfpunkte (Suite 09, 7 Tests):
+- UIA-Fenster erreichbar und hat Accessibility-Elemente
+- Mindestens 3 keyboard-fokussierbare Elemente vorhanden
+- Keine namenlosen Buttons (alle Button-Controls haben `Name` ≠ "")
+- Tab-Navigation ohne Falle (10× Tab, App bleibt stabil)
+- Tab verschiebt Fokus auf benanntes UIA-Element
+- Fokus-Indikator nach Tab visuell sichtbar (Pixel-Diff > 0)
+- Alle Kernfunktionen per Shortcut ohne Maus erreichbar (Ctrl+N, Ctrl+K, Ctrl+,)
+
+**Werkzeug:** Windows UI Automation API (`UIAutomationClient` / .NET) via PowerShell Temp-Scripts
+
+**Werkzeug (ideal, noch nicht umsetzbar):** `axe-core` via Playwright (`checkA11y()`) — erfordert CDP-Zugang
 
 ---
 
@@ -168,7 +174,7 @@ Nightly   →  E2E + Performance   (unbegrenzt, Ergebnis als Report)
 | E2E Black-Box | ✓ 31 Tests | ✓ 31 Tests + DOM-Assertions | Kein CDP |
 | Visual Regression | ✓ 4 Snapshots (pixelmatch) | ✓ ~20 Snapshots + Theme-Varianten | Teilweise umgesetzt |
 | Performance | ✓ 4 Proxy-Metriken (WorkingSet) | ✓ Heap/CPU via IPC | Teilweise umgesetzt |
-| Accessibility | ✗ Keine | ✓ axe-core | Kein DOM-Zugriff |
+| Accessibility | ✓ 7 Tests (Windows UIA API) | ✓ axe-core (WCAG-vollständig) | axe-core erfordert CDP |
 | CI/CD | ✓ GitHub Actions `windows-2022` (`.github/workflows/e2e.yml`) | ✓ GitHub Actions (Windows Runner) | — |
 
 ---

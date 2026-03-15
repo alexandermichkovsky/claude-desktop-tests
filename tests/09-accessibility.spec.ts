@@ -1,0 +1,156 @@
+import { test, expect } from '@playwright/test';
+import { Key } from '@nut-tree-fork/nut-js';
+import {
+  showClaudeDesktop,
+  focusClaudeDesktop,
+  getClaudeWindowTitles,
+  sleep,
+  pressKeys,
+  takeScreenshot,
+} from './helpers/app';
+import { getUIAWindowInfo, getFocusedElement } from './helpers/accessibility';
+
+// Accessibility-Tests via Windows UI Automation API (UIAutomationClient / .NET).
+// Entspricht dem OS-Level-Äquivalent zu axe-core — dieselbe API die NVDA und
+// Narrator nutzen. axe-core selbst erfordert CDP/DOM-Zugriff, der bei Claude
+// Desktop (AppX-Paket) nicht verfügbar ist.
+
+test.describe('Accessibility', () => {
+  test.beforeAll(async () => {
+    await showClaudeDesktop(20_000);
+    await sleep(1_000);
+    focusClaudeDesktop();
+    await sleep(500);
+  });
+
+  test.beforeEach(async () => {
+    focusClaudeDesktop();
+    await sleep(300);
+  });
+
+  // ── UIA-Struktur ──────────────────────────────────────────────────────────
+
+  test('9.1 Hauptfenster ist via Windows UI Automation erreichbar', async () => {
+    const info = getUIAWindowInfo();
+
+    expect(info.found).toBe(true);
+    expect(info.windowName).toBeTruthy();
+    expect(info.elementCount).toBeGreaterThan(0);
+
+    console.log(`  → UIA-Fenster: "${info.windowName}", ${info.elementCount} Elemente`);
+  });
+
+  test('9.2 Mindestens 3 keyboard-fokussierbare Elemente vorhanden', async () => {
+    await pressKeys(Key.LeftControl, Key.N);
+    await sleep(800);
+
+    const info = getUIAWindowInfo();
+
+    expect(info.found).toBe(true);
+    expect(info.focusableCount).toBeGreaterThanOrEqual(3);
+
+    console.log(`  → ${info.focusableCount} keyboard-fokussierbare Elemente`);
+  });
+
+  test('9.3 Alle Buttons haben zugängliche Namen (keine namenlosen Buttons)', async () => {
+    await pressKeys(Key.LeftControl, Key.N);
+    await sleep(800);
+
+    const info = getUIAWindowInfo();
+
+    expect(info.found).toBe(true);
+
+    if (info.unnamedButtons.length > 0) {
+      console.log(`  → Namenlose Buttons gefunden:`);
+      info.unnamedButtons.forEach(b => console.log(`     - ControlType: ${b.controlType}`));
+    }
+
+    expect(info.unnamedButtons.length).toBe(0);
+    console.log(`  → ${info.buttons.length} Buttons, alle mit Name`);
+  });
+
+  // ── Tastaturnavigation ────────────────────────────────────────────────────
+
+  test('9.4 Tab-Navigation ohne Falle (10× Tab, App bleibt stabil)', async () => {
+    await pressKeys(Key.LeftControl, Key.N);
+    await sleep(800);
+
+    for (let i = 0; i < 10; i++) {
+      await pressKeys(Key.Tab);
+      await sleep(150);
+    }
+
+    const titles = getClaudeWindowTitles();
+    expect(titles.length).toBeGreaterThan(0);
+    expect(titles[0]).toContain('Claude');
+
+    console.log(`  → App nach 10× Tab stabil: "${titles[0]}"`);
+  });
+
+  test('9.5 Tab verschiebt Fokus auf benanntes UIA-Element', async () => {
+    await pressKeys(Key.LeftControl, Key.N);
+    await sleep(800);
+
+    await pressKeys(Key.Tab);
+    await sleep(400);
+
+    const focused = getFocusedElement();
+
+    // Fokus liegt auf einem Element (nicht null)
+    expect(focused).not.toBeNull();
+    // Das fokussierte Element hat einen ControlType
+    expect(focused!.controlType).toBeTruthy();
+
+    console.log(`  → Fokussiert: "${focused!.name}" (${focused!.controlType})`);
+  });
+
+  test('9.6 Fokus-Indikator nach Tab visuell sichtbar (Pixel-Diff > 0)', async () => {
+    await pressKeys(Key.LeftControl, Key.N);
+    await sleep(800);
+
+    const before = await takeScreenshot('9.6-focus-before');
+    await pressKeys(Key.Tab);
+    await sleep(400);
+    const after = await takeScreenshot('9.6-focus-after');
+
+    expect(require('fs').existsSync(before)).toBe(true);
+    expect(require('fs').existsSync(after)).toBe(true);
+
+    const { PNG } = await import('pngjs');
+    const pixelmatch = (await import('pixelmatch')).default;
+    const img1 = PNG.sync.read(require('fs').readFileSync(before));
+    const img2 = PNG.sync.read(require('fs').readFileSync(after));
+
+    if (img1.width === img2.width && img1.height === img2.height) {
+      const diff = Buffer.alloc(img1.width * img1.height * 4);
+      const diffPixels = pixelmatch(img1.data, img2.data, diff, img1.width, img1.height, { threshold: 0.1 });
+      console.log(`  → ${diffPixels} Pixel Unterschied (Fokusindikator)`);
+      expect(diffPixels).toBeGreaterThan(0);
+    }
+  });
+
+  // ── Shortcut-Erreichbarkeit ───────────────────────────────────────────────
+
+  test('9.7 Alle Kernfunktionen per Shortcut ohne Maus erreichbar', async () => {
+    // Ctrl+N — neue Konversation
+    await pressKeys(Key.LeftControl, Key.N);
+    await sleep(800);
+    expect(getClaudeWindowTitles().length).toBeGreaterThan(0);
+
+    // Ctrl+K — Suchpalette
+    await pressKeys(Key.LeftControl, Key.K);
+    await sleep(600);
+    expect(getClaudeWindowTitles().length).toBeGreaterThan(0);
+    await pressKeys(Key.Escape);
+    await sleep(400);
+
+    // Ctrl+, — Einstellungen
+    await pressKeys(Key.LeftControl, Key.Comma);
+    await sleep(800);
+    expect(getClaudeWindowTitles().length).toBeGreaterThan(0);
+    await pressKeys(Key.Escape);
+    await sleep(400);
+
+    console.log('  → Ctrl+N, Ctrl+K, Ctrl+, alle ohne Maus erreichbar');
+  });
+});

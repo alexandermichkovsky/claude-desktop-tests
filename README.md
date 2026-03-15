@@ -16,7 +16,7 @@ npm install
 ## Tests ausführen
 
 ```bash
-# Alle Tests (39 Tests)
+# Alle Tests (46 Tests)
 npm test
 
 # Einzelne Test-Suite
@@ -72,6 +72,7 @@ npm run report
 | 06 Fenster | Minimieren, Maximieren, Alt+Tab, Positionscheck | 6 |
 | 07 Visual Regression | Pixel-Vergleich mit Baseline (1 % Toleranz) | 4 |
 | 08 Performance | Startzeit, Speicher, Memory Leak, Reaktionszeit | 4 |
+| 09 Accessibility | Windows UIA: Struktur, Tastaturnavigation, Fokus, Shortcuts | 7 |
 
 ## Visual Regression
 
@@ -148,3 +149,4 @@ Workflow-Datei: `.github/workflows/e2e.yml`
 | `@nut-tree-fork/nut-js` | Tastatur/Maus-Automation, Screenshots |
 | `pixelmatch` | Pixel-basierter Bildvergleich (Visual Regression) |
 | `pngjs` | PNG-Datei lesen/schreiben für Snapshot-Vergleich |
+| `UIAutomationClient` (.NET) | Windows Accessibility-Baum via PowerShell (Suite 09) |
