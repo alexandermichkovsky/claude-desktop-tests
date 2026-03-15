@@ -83,10 +83,10 @@ async function disableIncognito(): Promise<void> {
 
 test.describe('Inkognito-Modus', () => {
   test.beforeAll(async () => {
+    // Sauberer Zustand: App frisch starten damit kein offener Dialog stört
+    killClaudeDesktop();
     await showClaudeDesktop(20_000);
     await waitForNormalMode();
-    // Sicherstellen dass Inkognito zu Beginn deaktiviert ist
-    await disableIncognito();
   });
 
   test.beforeEach(async () => {
