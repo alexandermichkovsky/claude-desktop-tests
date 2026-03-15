@@ -27,9 +27,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Add winget to PATH
-        run: Add-Content $env:GITHUB_PATH "$env:LOCALAPPDATA\Microsoft\WindowsApps"
-        shell: pwsh
+      - name: Install winget
+        uses: Cyberboss/install-winget@v1
 
       - name: Install Claude Desktop (via winget)
         run: |
