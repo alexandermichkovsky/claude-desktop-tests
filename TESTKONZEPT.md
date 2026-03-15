@@ -48,14 +48,14 @@ Jeder Test prüft eine definierte Kernfunktion. Bei einem neuen Claude-Release w
 ## 4. Testumgebung
 
 ```
-Betriebssystem : Windows 10/11 (x64)
+Betriebssystem : Windows 10/11 (x64)  |  GitHub Actions: windows-2022
 Node.js        : ≥ 18
-Claude Desktop : Installiert via Microsoft Store
-Ausführung     : Interaktive Desktop-Session (kein Headless, kein CI-Server ohne GUI)
+Claude Desktop : Installiert via Microsoft Store  |  CI: automatisch via Installer
+Ausführung     : Interaktive Desktop-Session  |  CI: .github/workflows/e2e.yml
 Parallelität   : Sequenziell (workers: 1) — nur eine App-Instanz möglich
 ```
 
-> **Wichtig:** Tests können nicht in einer Session ohne interaktiven Desktop laufen (z. B. Windows Service, SSH ohne GUI). Die nut-js-Maus/Tastatur-Simulation und die Fenster-APIs erfordern eine aktive Windows-Desktopsitzung.
+> **Wichtig:** Tests erfordern eine aktive Windows-Desktopsitzung. Windows Services oder SSH ohne GUI funktionieren nicht. GitHub Actions `windows-2022`-Runner stellen eine interaktive Session bereit und sind daher CI-kompatibel.
 
 ---
 

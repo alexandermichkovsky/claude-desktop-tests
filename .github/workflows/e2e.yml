@@ -1,0 +1,80 @@
+name: Claude Desktop E2E Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    # windows-2022 runner has a real interactive desktop session —
+    # required for nut-js keyboard/mouse automation and Win32 window APIs.
+    runs-on: windows-2022
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Claude Desktop is an AppX package. Provide the installer URL via a
+      # repository secret named CLAUDE_INSTALLER_URL (Settings → Secrets).
+      # Get the URL from https://claude.ai/download (Windows).
+      - name: Download Claude Desktop installer
+        run: |
+          Invoke-WebRequest -Uri "$env:CLAUDE_INSTALLER_URL" -OutFile "ClaudeSetup.exe"
+        shell: pwsh
+        env:
+          CLAUDE_INSTALLER_URL: ${{ secrets.CLAUDE_INSTALLER_URL }}
+
+      - name: Install Claude Desktop
+        run: |
+          Start-Process -FilePath ".\ClaudeSetup.exe" -ArgumentList "/S" -Wait
+          Start-Sleep -Seconds 8
+          $pkg = Get-AppxPackage | Where-Object { $_.Name -like "*Claude*" }
+          if (-not $pkg) { throw "Claude Desktop installation not found after setup." }
+          Write-Host "Installed: $($pkg.PackageFullName)"
+        shell: pwsh
+
+      # Prevent Windows from locking the desktop mid-test (no screensaver,
+      # no sleep) — the runner already has no physical screen, but the policy
+      # can still trigger a locked workstation state on some runner images.
+      - name: Disable display sleep / screensaver
+        run: |
+          powercfg /change standby-timeout-ac 0
+          powercfg /change monitor-timeout-ac 0
+          reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d 0 /f
+        shell: pwsh
+
+      - name: Run E2E tests
+        run: npm test
+        timeout-minutes: 20
+
+      # Visual regression baselines are committed to the repo under
+      # test-screenshots/baseline/. On first CI run they are created
+      # automatically; subsequent runs diff against them.
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload screenshots (baseline + diffs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: test-screenshots/
+          retention-days: 30

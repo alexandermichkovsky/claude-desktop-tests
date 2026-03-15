@@ -169,7 +169,7 @@ Nightly   →  E2E + Performance   (unbegrenzt, Ergebnis als Report)
 | Visual Regression | ✓ 4 Snapshots (pixelmatch) | ✓ ~20 Snapshots + Theme-Varianten | Teilweise umgesetzt |
 | Performance | ✓ 4 Proxy-Metriken (WorkingSet) | ✓ Heap/CPU via IPC | Teilweise umgesetzt |
 | Accessibility | ✗ Keine | ✓ axe-core | Kein DOM-Zugriff |
-| CI/CD | ✗ Kein headless möglich | ✓ GitHub Actions (Windows Runner) | Interaktive Session erforderlich |
+| CI/CD | ✓ GitHub Actions `windows-2022` (`.github/workflows/e2e.yml`) | ✓ GitHub Actions (Windows Runner) | Installer-URL als Secret erforderlich |
 
 ---
 
@@ -178,7 +178,7 @@ Nightly   →  E2E + Performance   (unbegrenzt, Ergebnis als Report)
 ### Kurzfristig (ohne Quellcode-Zugriff)
 1. ✅ **Snapshot-Vergleich** — Umgesetzt in Suite 07 (`pixelmatch`, 1 % Toleranz, `npm run update-snapshots`)
 2. ✅ **Performance-Proxy** — Umgesetzt in Suite 08 (Startzeit, WorkingSet, Memory Leak, Reaktionszeit)
-3. **CI auf Windows Hosted Runner** — GitHub Actions `windows-latest` mit aktiviertem GUI-Support (`runs-on: windows-latest` + Virtual Desktop via `windows-2022` Runner)
+3. ✅ **CI auf Windows Hosted Runner** — Umgesetzt in `.github/workflows/e2e.yml` (GitHub Actions `windows-2022`, interaktive Desktop-Session, automatischer Claude-Install via Secret `CLAUDE_INSTALLER_URL`, Playwright-Report + Screenshots als Artifacts)
 
 ### Mittelfristig (mit Quellcode-Zugriff / Entwickler-Zusammenarbeit)
 4. **CDP aktivieren** — `ELECTRON_EXTRA_LAUNCH_ARGS=--remote-debugging-port=9222` in einem Debug-Build ermöglichen → schaltet DOM-Assertions frei

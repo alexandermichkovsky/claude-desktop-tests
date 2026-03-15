@@ -128,6 +128,20 @@ export const CLAUDE_AUMID = 'Claude_pzs8sxrjxfjjc!Claude';
 
 Der Publisher-Suffix `pzs8sxrjxfjjc` ist an den Anthropic-Signaturschlüssel gebunden und ändert sich nicht.
 
+## CI / GitHub Actions
+
+Tests laufen automatisch bei jedem Push und Pull Request auf einem GitHub Actions `windows-2022`-Runner.
+
+**Einmalige Einrichtung:** Repository Secret `CLAUDE_INSTALLER_URL` anlegen (`Settings → Secrets and variables → Actions`) mit der Download-URL des Claude Desktop Windows-Installers.
+
+Nach jedem Run stehen unter dem **Actions**-Tab als Artifacts bereit:
+- `playwright-report` — HTML-Testreport
+- `test-screenshots` — Baselines und Diff-Bilder (Visual Regression)
+
+Workflow-Datei: `.github/workflows/e2e.yml`
+
+---
+
 ## Abhängigkeiten
 
 | Paket | Zweck |
