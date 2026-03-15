@@ -27,20 +27,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download Claude Desktop installer
+      - name: Install Claude Desktop (via winget)
         run: |
-          Invoke-WebRequest -Uri "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe" -OutFile "ClaudeSetup.exe"
-        shell: pwsh
-
-      - name: Install Claude Desktop
-        run: |
-          $proc = Start-Process -FilePath ".\ClaudeSetup.exe" -ArgumentList "/S" -PassThru
-          # Wait max 90s — installer launches the app afterwards and never exits otherwise
-          $proc.WaitForExit(90000) | Out-Null
-          if (-not $proc.HasExited) { $proc.Kill() }
-          Start-Sleep -Seconds 5
+          winget install --id Anthropic.Claude --silent --accept-package-agreements --accept-source-agreements
+          Start-Sleep -Seconds 10
           $pkg = Get-AppxPackage | Where-Object { $_.Name -like "*Claude*" }
-          if (-not $pkg) { throw "Claude Desktop installation not found after setup." }
+          if (-not $pkg) { throw "Claude Desktop AppX package not found after winget install." }
           Write-Host "Installed: $($pkg.PackageFullName)"
         shell: powershell
 
