@@ -42,7 +42,7 @@ jobs:
           $pkg = Get-AppxPackage | Where-Object { $_.Name -like "*Claude*" }
           if (-not $pkg) { throw "Claude Desktop installation not found after setup." }
           Write-Host "Installed: $($pkg.PackageFullName)"
-        shell: pwsh
+        shell: powershell
 
       # Prevent Windows from locking the desktop mid-test (no screensaver,
       # no sleep) — the runner already has no physical screen, but the policy
