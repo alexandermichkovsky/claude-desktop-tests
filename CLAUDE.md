@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Run all tests (53 tests)
+# Run all tests (64 tests)
 npm test
 
 # Run a single test file

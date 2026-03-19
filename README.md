@@ -46,7 +46,8 @@ npm run report
 │   │   ├── app.ts                    # Kern-Helper: App-Start, Fenster, Input
 │   │   ├── visual.ts                 # Snapshot-Vergleich (pixelmatch)
 │   │   ├── performance.ts            # Performance-Proxy-Metriken
-│   │   └── accessibility.ts          # Windows UIA, Fokus, Inkognito-Erkennung
+│   │   ├── accessibility.ts          # Windows UIA, Fokus, Inkognito-Erkennung
+│   │   └── cowork.ts                 # Cowork-Tab UIA: Tab-Koordinaten, Aktiv-Status, ShowWindow
 │   ├── 01-startup.spec.ts            # Startup & Initialisierung (5 Tests)
 │   ├── 02-conversation.spec.ts       # Konversationsmanagement (6 Tests)
 │   ├── 03-ui-navigation.spec.ts      # UI-Navigation & Shortcuts (4 Tests)
@@ -56,14 +57,15 @@ npm run report
 │   ├── 07-visual-regression.spec.ts  # Visual Regression / Snapshot-Vergleich (4 Tests)
 │   ├── 08-performance.spec.ts        # Performance-Proxy (4 Tests)
 │   ├── 09-accessibility.spec.ts      # Accessibility via Windows UIA (7 Tests)
-│   └── 10-incognito.spec.ts          # Inkognito-Modus (7 Tests)
+│   ├── 10-incognito.spec.ts          # Inkognito-Modus (7 Tests)
+│   └── 11-cowork.spec.ts             # Cowork-Tab: Navigation, Eingabe, Stabilität (11 Tests)
 ├── test-screenshots/
 │   ├── baseline/                     # Referenz-Snapshots (Visual Regression)
 │   └── diff/                         # Diff-Bilder bei Abweichungen
 └── playwright-report/                # HTML-Testreport
 ```
 
-## Testsuiten (53 Tests gesamt)
+## Testsuiten (64 Tests gesamt)
 
 | Suite | Beschreibung | Tests |
 |-------|-------------|-------|
@@ -77,6 +79,7 @@ npm run report
 | 08 Performance | Startzeit, Speicher, Memory Leak, Reaktionszeit | 4 |
 | 09 Accessibility | Windows UIA: Struktur, Tastaturnavigation, Fokus, Shortcuts | 7 |
 | 10 Inkognito | Aktivierung, Toggle, visueller Indikator, Stabilität | 7 |
+| 11 Cowork | Tab-Navigation, Eingabe, Stabilität, Visual Regression, Memory | 11 |
 
 ## Visual Regression
 
