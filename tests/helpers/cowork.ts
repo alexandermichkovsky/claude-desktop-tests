@@ -54,6 +54,19 @@ $hwnd = $proc.MainWindowHandle
 `;
 
 /**
+ * Polls until the named tab element appears in the UIA tree, or the timeout expires.
+ * Use in beforeAll after launchClaudeDesktop() — the Cowork tab renders asynchronously
+ * and may not be present immediately after the window becomes visible.
+ */
+export async function waitForCoworkTab(tabName: string, maxSeconds = 15): Promise<void> {
+  for (let i = 0; i < maxSeconds * 2; i++) {
+    if (getTabCoords(tabName) !== null) return;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw new Error(`[cowork] Tab "${tabName}" did not appear in UIA tree within ${maxSeconds}s`);
+}
+
+/**
  * Finds any UIA element in the Claude Desktop window by exact name.
  * Returns screen centre coordinates of the first match, or null.
  * Used for tab navigation (Chat / Cowork / Code).
