@@ -138,7 +138,7 @@ test.describe('Accessibility', () => {
 
     if (img1.width === img2.width && img1.height === img2.height) {
       const diff = Buffer.alloc(img1.width * img1.height * 4);
-      const diffPixels = pixelmatch(img1.data, img2.data, diff, img1.width, img1.height, { threshold: 0.1 });
+      const diffPixels = pixelmatch(img1.data as Uint8Array, img2.data as Uint8Array, diff as Uint8Array, img1.width, img1.height, { threshold: 0.1 });
       console.log(`  → ${diffPixels} Pixel Unterschied nach Tab`);
 
       // Wenn immer noch 0: dann gibt es tatsächlich keinen visuellen Fokus-Indikator
