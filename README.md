@@ -63,7 +63,7 @@ npm run report
 └── playwright-report/                # HTML-Testreport
 ```
 
-## Testsuiten (39 Tests gesamt)
+## Testsuiten (53 Tests gesamt)
 
 | Suite | Beschreibung | Tests |
 |-------|-------------|-------|
