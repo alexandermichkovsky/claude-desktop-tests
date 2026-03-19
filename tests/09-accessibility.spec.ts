@@ -122,10 +122,11 @@ test.describe('Accessibility', () => {
     await sleep(300);
 
     // PowerShell CopyFromScreen statt nut-js screen.capture() — zuverlässiger
-    const before = captureWindowScreenshot('9.6-focus-before');
+    // Underscore instead of dot — captureWindowScreenshot rejects dots in names   
+    const before = captureWindowScreenshot('9_6-focus-before');
     await pressKeys(Key.Tab);
     await sleep(400);
-    const after = captureWindowScreenshot('9.6-focus-after');
+    const after = captureWindowScreenshot('9_6-focus-after');
 
     expect(fs.existsSync(before)).toBe(true);
     expect(fs.existsSync(after)).toBe(true);
